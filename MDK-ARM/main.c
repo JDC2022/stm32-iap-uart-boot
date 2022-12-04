@@ -1,3 +1,12 @@
+/*
+ * @Author       : wang chao
+ * @Date         : 2022-12-05 07:38:51
+ * @LastEditors  : wang chao
+ * @LastEditTime : 2022-12-05 07:41:25
+ * @FilePath     : main.c
+ * @Description  : 
+ * Copyright 2022 BingShan, All Rights Reserved. 
+ */
 #include "common.h"
 #include "iap.h"
 
@@ -7,32 +16,21 @@ int main(void)
 	
 	while(1)
 	{
+        /*
+            1. 先判断是否需要升级，是否需要擦除硬盘
+            2. 如果都没有，那么直接运行APP
+        */
 		switch(IAP_ReadFlag())
 		{
-			case APPRUN_FLAG_DATA://jump to app
-				if( IAP_RunApp())
-					IAP_WriteFlag(INIT_FLAG_DATA);
-				break;
-			case INIT_FLAG_DATA://initialze state (blank mcu)
-				IAP_Main_Menu();
-				break;
 			case UPDATE_FLAG_DATA:// download app state				
 				if( !IAP_Update()) 
 					IAP_WriteFlag(APPRUN_FLAG_DATA);
-				else
-					IAP_WriteFlag(INIT_FLAG_DATA);
-				break;
-			case UPLOAD_FLAG_DATA:// upload app state
-//				if( !IAP_Upload())
-//					IAP_WriteFlag(APPRUN_FLAG_DATA);
-//				else 
-//					IAP_WriteFlag(INIT_FLAG_DATA);
 				break;
 			case ERASE_FLAG_DATA:// erase app state
 				IAP_Erase();
-				IAP_WriteFlag(INIT_FLAG_DATA);
 				break;
 			default:
+                IAP_RunApp();
 				break;
 		}
 	}
